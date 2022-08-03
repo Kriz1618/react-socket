@@ -12,14 +12,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
-    cors: {
-        // origin: '*' uncommented locally
-    }
+    // cors: {
+    //     // origin: '*' uncommented locally
+    // }
 });
 
 app.use(morgan('dev'));
 app.use(cors());
-app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(express.static(join(__dirname, '../../client/build')));
 
 io.on('connection', (socket) => {
     console.log('Socket client connected!!', socket.id);
@@ -28,10 +30,6 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('message', message);
     });
 });
-
-app.use(express);
-
-app.use(express.static(join(__dirname, '../client/build')));
 
 server.listen(PORT);
 console.log(`Server runing on por ${PORT}`);
